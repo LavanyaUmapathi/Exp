@@ -1,0 +1,7 @@
+Test 2 got successed.
+
+Job got triggered from Jenkins
+
+Test3. Adding a piece of code to same branch.\
+
+Expected result: Job should trigger.
