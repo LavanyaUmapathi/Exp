@@ -8,6 +8,24 @@
     <artifactId>volga-hive</artifactId>
     <version>1.0.0</version>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- https://github.com/spring-projects/spring-hadoop/wiki/Build-with-Hortonworks-HDP-2.2 -->
+        <spring.hadoop.version>2.1.2.RELEASE-hdp22</spring.hadoop.version>
+        <hadoop.version>2.6.0</hadoop.version>
+        <mapreduce.framework>classic</mapreduce.framework>
+	<!-- Hive should be 1.2.1 but version 1.1.0+ fail with
+	     java.lang.NoClassDefFoundError: org/apache/log4j/or/RendererMap
+	-->
+        <hive.version>0.14.0</hive.version>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+        <spring.version>4.0.6.RELEASE</spring.version>
+        <slf4j.version>1.6.1</slf4j.version>
+        <jackson2.version>2.0.2</jackson2.version>
+        <powermock.version>1.5.5</powermock.version>
+        <log4j.version>2.2</log4j.version>
+    </properties>
          
     <dependencies>
         <dependency>
