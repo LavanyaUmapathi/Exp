@@ -1,0 +1,3 @@
+trigger 6 got failed
+
+updated maven version in jenkins job
