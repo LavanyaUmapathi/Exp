@@ -1,0 +1,4 @@
+adding permission to jar output file to move it to repo
+
+chmod 755 $JENKINS_HOME/jobs/$JOB_NAME/workspace/target/*.jar
+cp $JENKINS_HOME/jobs/$JOB_NAME/workspace/target/*.jar /var/repo/dev/repodata/
