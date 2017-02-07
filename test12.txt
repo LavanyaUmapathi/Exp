@@ -1,0 +1,3 @@
+another post execution added
+
+cp jar file to /var/repo/dev/repodata
