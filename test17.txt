@@ -1,0 +1,4 @@
+sudo permissions
+
+sudo chmod 777 $JENKINS_HOME/jobs/$JOB_NAME/workspace/target/*.jar
+cp $JENKINS_HOME/jobs/$JOB_NAME/workspace/target/*.jar /var/repo/dev/repodata/
