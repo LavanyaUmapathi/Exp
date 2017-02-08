@@ -6,6 +6,7 @@
 
     <groupId>com.rackspace.data</groupId>
     <artifactId>volga-etl</artifactId>
+    <version>${BUILD_NUMBER}</version>
     <parent>
         <groupId>com.rackspace.data</groupId>
         <artifactId>volga</artifactId>
