@@ -6,7 +6,7 @@
 
     <groupId>com.rackspace.data</groupId>
     <artifactId>volga-hive</artifactId>
-    <version>1.0.0</version>
+    <version>${BUILD_NUMBER}</version>
 
 
     <parent>
@@ -44,7 +44,6 @@
               <license>Rackspace Proprietary</license>
               <description>RPM package for project</description>
               <group>volga</group>
-              <release> ${BUILD_NUMBER} </release>
               <targetOS>linux</targetOS>
               <mappings>
                   <mapping>
