@@ -1,0 +1,49 @@
+---
+CONFIG: /data/pipeline/config
+MARKERS: /data/pipeline/markers
+LOGS: /data/pipeline/logs
+
+# Admin scripts (cron)
+ADMIN: /data/acumen-admin
+
+# CF scripts in $ACUMEN_DATA_ROOT/scripts
+ACUMEN_DATA_ROOT: /data/acumen-data
+
+# Scala Map-Reduce running scripts in $ACUMEN_TOOLS_ROOT/scripts
+ACUMEN_TOOLS_ROOT: /data/acumen-tool
+
+# ETL package root
+ACUMEN_ETL_ROOT: /data/volga-etl-maas
+
+# Map-Reduce
+#   scheduler pool
+MR_SCHEDULER_POOL: misc
+
+# Common ETL config
+#   shared options to hadoop JSON driver jar
+COMMON_ETL_JAR_OPTS: "-Dmapred.fairscheduler.pool=$MR_SCHEDULER_POOL -Dmapred.reduce.tasks=10 -Dmapred.child.java.opts=-Xmx1024m"
+
+# MAAS CF config
+MAAS_CF_HADOOP_USER_NAME: ci
+# Root of dir. subdirs: data, markers
+MAAS_CF_HADOOP_HOME: /user/ci
+
+# HDFS config
+HDFS_MAAS_USER: maas
+HDFS_MAAS_HOME: /user/maas
+HDFS_MAAS_INPUT_DIR: "maas/metric-data"
+
+
+# Other config
+SECONDS_IN_DAY: 86400
+
+# flume config
+# Directory to write log files; move them atomically here
+FLUME_JOB_MESSAGES_SPOOL_DIR: /var/log/flume/job-messages-spool
+
+# pager duty config
+PAGER_DUTY_CONFIG_FILE: "/etc/acumen/pager-duty.conf"
+PAGER_DUTY_CREATE_EVENT_API_ENDPOINT: "https://events.pagerduty.com/generic/2010-04-15/create_event.json"
+
+# Jars
+CSV_SERDE_JAR: "/usr/lib/hive/lib/csv-serde-1.1.2-0.11.0-all.jar"

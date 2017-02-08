@@ -1,0 +1,148 @@
+DQ_requests
+
+SET hive.cli.PRINT.header = true;
+
+
+====================NO DUPLICATE ROWS PER REQUEST,INSTANCE,TENANT : PASSED===================
+
+Job 0: Map: 2  Reduce: 1   Cumulative CPU: 38.35 sec   HDFS Read: 18128362 HDFS Write: 36 SUCCESS
+Total MapReduce CPU Time Spent: 38 seconds 350 msec
+OK
+_c0     dt
+291254  2015-07-13
+282240  2015-07-14
+Time taken: 57.386 seconds, Fetched: 2 row(s)
+[neha8380@GATEWAY-1 scripts]$ hive -e "select count(distinct CONCAT(concat(request_id,instance_id),TENANT_ID)), DT from stacktach.requests where DT between '2015-06-25' and '2015-07-15' group by DT;"
+
+
+Job 0: Map: 2  Reduce: 1   Cumulative CPU: 12.36 sec   HDFS Read: 18128362 HDFS Write: 36 SUCCESS
+Total MapReduce CPU Time Spent: 12 seconds 360 msec
+OK
+_c0     dt
+291254  2015-07-13
+282240  2015-07-14
+Time taken: 62.471 seconds, Fetched: 2 row(s)
+[neha8380@GATEWAY-1 scripts]$ hive -e "select count(CONCAT(concat(request_id,instance_id),TENANT_ID)), DT from stacktach.requests where DT between '2015-06-25' and '2015-07-15' group by DT;"
+
+Job 0: Map: 2  Reduce: 1   Cumulative CPU: 12.49 sec   HDFS Read: 18128362 HDFS Write: 36 SUCCESS
+Total MapReduce CPU Time Spent: 12 seconds 490 msec
+OK
+_c0     dt
+291254  2015-07-13
+282240  2015-07-14
+Time taken: 44.043 seconds, Fetched: 2 row(s)
+[neha8380@GATEWAY-1 scripts]$ hive -e "select count(*), DT from stacktach.requests where DT between '2015-06-25' and '2015-07-15' AND REQUEST_ID IS NOT NULL AND INSTANCE_ID IS NOT NULL AND TENANT_ID IS NOT NULL group by DT;"
+
+
+Job 0: Map: 2  Reduce: 1   Cumulative CPU: 30.09 sec   HDFS Read: 15869685 HDFS Write: 36 SUCCESS
+Total MapReduce CPU Time Spent: 30 seconds 90 msec
+OK
+_c0     dt
+291241  2015-07-13
+282236  2015-07-14
+Time taken: 68.237 seconds, Fetched: 2 row(s)
+[neha8380@GATEWAY-1 scripts]$ hive -e "select count(distinct concat(request_id,instance_id)), DT from stacktach.requests where DT between '2015-06-25' and '2015-07-15' group by DT;"
+
+==============NO NULL REQUEST_ID : PASSED===========================
+
+Job 0: Map: 2  Reduce: 1   Cumulative CPU: 9.08 sec   HDFS Read: 5171163 HDFS Write: 36 SUCCESS
+Total MapReduce CPU Time Spent: 9 seconds 80 msec
+OK
+_c0     dt
+329725  2015-07-13
+311522  2015-07-14
+Time taken: 64.624 seconds, Fetched: 2 row(s)
+[neha8380@GATEWAY-1 scripts]$ hive -e "select count(request_id), DT from stacktach.requests where DT between '2015-06-25' and '2015-07-15' group by DT;"
+
+
+Job 0: Map: 2  Reduce: 1   Cumulative CPU: 9.22 sec   HDFS Read: 5171163 HDFS Write: 36 SUCCESS
+Total MapReduce CPU Time Spent: 9 seconds 220 msec
+OK
+_c0     dt
+329725  2015-07-13
+311522  2015-07-14
+Time taken: 43.561 seconds, Fetched: 2 row(s)
+[neha8380@GATEWAY-1 scripts]$ hive -e "select count(request_id), DT from stacktach.requests where DT between '2015-06-25' and '2015-07-15' AND REQUEST_ID IS NOT NULL group by DT;"
+
+
+============================HAS ALMOST 45% ROWS WITH ATLEAST ONE OF REQUEST,INSTANCE,TENANT AS NULL : NOT PASSED==========================
+============================THIS NEEDS JUSTIFICATION FROM STACKTACH TEAM=======================================================
+
+Total MapReduce CPU Time Spent: 17 seconds 390 msec
+OK
+_c0     dt
+521903  2015-07-13
+515003  2015-07-14
+Time taken: 59.6 seconds, Fetched: 2 row(s)
+[neha8380@GATEWAY-1 scripts]$ hive -e "select count(*),DT from stacktach.requests where DT between '2015-06-25' and '2015-07-15' group by DT;"
+
+
+============same requests DATA NOT REPEATING NEXT DAY :NOT PASSED===============================
+********************Root cause Details and resolution approach**********************************
+Root cause : Scenario causing this issue: Source sends N events for a Request X on day D and M events for a Request X on Day D+1,
+Current entry point parameters for requests is same as events which builds events and requests dataset using data received on each day.
+So in this case we build both Datasets on D and D+1, When request dataset is built for day D , it captures request X , when it is build for day D+1 it captures request X again.
+Hence it results into capturing repeat requests.
+
+Resolution : 
+events dataset for day D should be built using data received on day D
+Request dataset is aggregated dataset ,it should be build on day D using data received from D-15 to D.
+
+Code changes recommended,  
+1 : entry point for requests should be outside the scope of events , move the call to request from stacktach-load-date.sh to stacktach-request-load-date.sh
+2 : call to request should have start_dt and end_dt arguments where start_dt can be $date - 15 and end_dt can be $date
+3 : As a safety gaurd , ignore older then 2 weeks of events ,Add this condition 'and e.dt_ts_utc >="${start_date}" AND e.dt_ts_utc <= "${end_date}" and request_id is not null and instance_id is not null and tenant_id is not null' after https://github.com/racker/acumen/blob/master/admin/stacktach-etl/stacktach-requests-load-date.sh#L247 
+
+************************************************************************************************
+Job 0: Map: 2  Reduce: 1   Cumulative CPU: 30.02 sec   HDFS Read: 18128362 HDFS Write: 7 SUCCESS
+Total MapReduce CPU Time Spent: 30 seconds 20 msec
+OK
+_c0
+570261
+Time taken: 79.037 seconds, Fetched: 1 row(s)
+[neha8380@GATEWAY-1 scripts]$ hive -e "select counT(DISTINCT CONCAT(CONCAT(REQUEST_ID,INSTANCE_ID),TENANT_ID)) from stacktach.requests where DT between '2015-06-25' and '2015-07-15' AND REQUEST_ID IS NOT NULL AND INSTANCE_ID IS NOT NULL AND TENANT_ID IS NOT NULL;"
+
+Job 0: Map: 2  Reduce: 1   Cumulative CPU: 26.01 sec   HDFS Read: 18128362 HDFS Write: 860 SUCCESS
+Total MapReduce CPU Time Spent: 26 seconds 10 msec
+OK
+request_id      instance_id     tenant_id
+req-0032c082-1d62-4d47-8664-1f6dd6c0550e        8d46b28b-ff2f-4fa0-8923-2bb8f38eb255    10020025
+req-0045da97-1101-4276-9885-a3fa2dd54537        b35dba02-5539-4a05-8f3e-546386649600    10019570
+req-00563d00-9126-4568-b811-4a5242ae2ed0        68ecc61f-34b7-4f29-bc82-c5e8deb8e0ed    637776
+req-005b1b53-96db-46c1-ba46-da355af82fbf        2c6086e4-8495-4f57-aba8-7f1f5b26e8ff    776759
+req-006fb987-3b40-4cc4-b3c4-cae7a33ec622        49d0b6f7-2c96-4934-9309-8d131922daae    10044785
+req-007810f9-71f3-4ff9-b125-5aeaa3cf8ce1        15b6b42f-3cb7-4490-8a27-22c92b9b4ae7    10044304
+req-00828016-a639-4691-b7f5-be60d34fefc1        0be320d9-35f3-43ea-a44b-9b72930cb708    728975
+req-00e6fe0d-a206-4ce4-8f37-98df756bec73        f00bfce5-f399-4f9c-ad1b-d9a042259706    10013563
+req-00fbf720-0853-42b7-ab8b-e6976153ba42        c442e6c4-0957-49b1-9d42-11546d9d1bf7    728975
+req-01080b42-c3ba-4187-9ddf-eb8bc5da25f9        33d94ad8-3b9c-4d3e-ab22-f9664ecc8213    669831
+Time taken: 49.676 seconds, Fetched: 10 row(s)
+[neha8380@GATEWAY-1 scripts]$ hive -e "SELECT * FROM (select REQUEST_ID , INSTANCE_ID , TENANT_ID  from stacktach.requests where DT between '2015-06-25' and '2015-07-15' AND REQUEST_ID IS NOT NULL AND INSTANCE_ID IS NOT NULL AND TENANT_ID IS NOT NULL GROUP BY REQUEST_ID,INSTANCE_ID,TENANT_ID HAVING COUNT(*) >= 2 ) DUPES LIMIT 10 ;"
+
+Job 0: Map: 2   Cumulative CPU: 13.14 sec   HDFS Read: 33732811 HDFS Write: 831 SUCCESS
+Total MapReduce CPU Time Spent: 13 seconds 140 msec
+OK
+hive_last_updated_ts    request_dt      request_id      tenant_id       instance_id     request_start_ts        request_end_ts  instance_active_ts      has_end has_shutdown    has_delete      has_buildcnt_error_events cnt_error_states        cnt_error_recoveries    states  task_states     messages        error_messages  error_exception_codes   event_types     first_state     last_state      first_state_description   last_state_description  first_task_state        last_task_state cell    region  instance_flavor_id      instance_type_name      instance_type_flavorid  instance_type_id        instance_type_flavor_id   os_type image_type      memory_mb       disk_gb root_gb ephemeral_gb    vcpus   instance_type   rax_options     dt
+2015-07-15 02:31:21     2015-07-13      req-0032c082-1d62-4d47-8664-1f6dd6c0550e        10020025        8d46b28b-ff2f-4fa0-8923-2bb8f38eb255    2015-07-13 23:23:21.892789      2015-07-13 23:23:34.852967
+		NULL    0       1       1       0       0       0       0       deleted|active  deleting                                compute.instance.update|compute.instance.delete.end|compute.instance.shutdown.start|compute.instance.delete.start active  deleted                 NULL    NULL    lon     c0007   2       NULL    NULL    2       NULL    linux   base    512     20      20      0       1       512MB Standard Instance   0       2015-07-13
+2015-07-16 02:07:02     2015-07-13      req-0032c082-1d62-4d47-8664-1f6dd6c0550e        10020025        8d46b28b-ff2f-4fa0-8923-2bb8f38eb255    2015-07-13 23:23:21.798013      2015-07-13 23:23:34.667797
+		NULL    0       1       0       0       0       0       0       deleted|active  deleting                                compute.instance.update|compute.instance.shutdown.end   active  deleted deleting          deleting        NULL    lon     global  2       NULL    NULL    2       NULL    linux   base    512     20      20      0       1       512MB Standard Instance 0       2015-07-14
+Time taken: 93.215 seconds, Fetched: 2 row(s)
+[neha8380@GATEWAY-1 scripts]$ hive -e "SELECT * FROM stacktach.requests where DT between '2015-06-25' and '2015-07-15' AND REQUEST_ID = 'req-0032c082-1d62-4d47-8664-1f6dd6c0550e' AND INSTANCE_ID  = '8d46b28b-ff2f-4fa0-8923-2bb8f38eb255' AND TENANT_ID  = '10020025' ;"
+
+
+hdfs://NAMENODE-1:8020/tmp/stacktach-load-date.sh-16089/json-in/dt=2015-07-13/20150713-lon-1436745602.762383-aggregate.json.gz#c0007#lon#2015-07-13 23:23:21.892789#2015-07-13#2015-07-13 23:23:21.892789#compute.instance.update#10020025#10009586#req-0032c082-1d62-4d47-8664-1f6dd6c0550e#eba60f15-4ecf-4b11-9a6f-7af1a884c7b6#\N#8d46b28b-ff2f-4fa0-8923-2bb8f38eb255#compute.nova-cells01.c0007.lon.ohthree.com#compute.nova-cells01.c0007.lon.ohthree.com#512MB Standard Instance#2#\N#\N#2#\N#linux#base#512#20#20#0#1#512MB Standard Instance#active#active##x64#6.5#org.centos#0#2015-07-13 23:23:04##testserver778583#2015-07-13 00:00:00#2015-07-13 23:23:21#\N#\N#INFO#compute.nova-cells01.c0007.lon.ohthree.com##\N#\N##http://10.21.228.241:9292/images/70d38a32-5f63-45df-a0e7-7e06fc89370a#2015-07-13
+hdfs://NAMENODE-1:8020/tmp/stacktach-load-date.sh-16089/json-in/dt=2015-07-13/20150713-lon-1436745602.762383-aggregate.json.gz#c0007#lon#2015-07-13 23:23:22.012832#2015-07-13#2015-07-13 23:23:22.012832#compute.instance.update#10020025#10009586#req-0032c082-1d62-4d47-8664-1f6dd6c0550e#2de0499e-c66b-4f57-93b6-36e2107a4de7#\N#8d46b28b-ff2f-4fa0-8923-2bb8f38eb255#compute.nova-cells01.c0007.lon.ohthree.com#compute.nova-cells01.c0007.lon.ohthree.com#512MB Standard Instance#2#\N#\N#2#\N#linux#base#512#20#20#0#1#512MB Standard Instance#active#active#deleting#x64#6.5#org.centos#0#2015-07-13 23:23:04##testserver778583#2015-07-13 00:00:00#2015-07-13 23:23:22#\N#\N#INFO#compute.nova-cells01.c0007.lon.ohthree.com##deleting#deleting##http://10.21.228.241:9292/images/70d38a32-5f63-45df-a0e7-7e06fc89370a#2015-07-13
+hdfs://NAMENODE-1:8020/tmp/stacktach-load-date.sh-16089/json-in/dt=2015-07-13/20150713-lon-1436745602.762383-aggregate.json.gz#c0007#lon#2015-07-13 23:23:24.546742#2015-07-13#2015-07-13 23:23:24.546742#compute.instance.delete.start#10020025#10009586#req-0032c082-1d62-4d47-8664-1f6dd6c0550e#a08a02f8-5642-462a-93c7-4df58a18cc3c#\N#8d46b28b-ff2f-4fa0-8923-2bb8f38eb255#compute.c-10-21-17-249#compute.c-10-21-17-249#512MB Standard
+Instance#2#\N#\N#2#\N#linux#base#512#20#20#0#1#512MB Standard Instance#active#\N#deleting#x64#6.5#org.centos#0#2015-07-13 23:23:04##testserver778583#\N#\N#\N#\N#INFO#compute.c-10-21-17-249##\N#\N##http://10.21.17.249:9292/images/70d38a32-5f63-45df-a0e7-7e06fc89370a#2015-07-13
+hdfs://NAMENODE-1:8020/tmp/stacktach-load-date.sh-16089/json-in/dt=2015-07-13/20150713-lon-1436745602.762383-aggregate.json.gz#c0007#lon#2015-07-13 23:23:24.57062#2015-07-13#2015-07-13 23:23:24.570620#compute.instance.shutdown.start#10020025#10009586#req-0032c082-1d62-4d47-8664-1f6dd6c0550e#a7f8baef-e4ec-4a9c-9ab8-1ef6c848956e#\N#8d46b28b-ff2f-4fa0-8923-2bb8f38eb255#compute.c-10-21-17-249#compute.c-10-21-17-249#512MB Standard Instance#2#\N#\N#2#\N#linux#base#512#20#20#0#1#512MB Standard Instance#active#\N#deleting#x64#6.5#org.centos#0#2015-07-13 23:23:04##testserver778583#\N#\N#\N#\N#INFO#compute.c-10-21-17-249##\N#\N##http://10.21.17.249:9292/images/70d38a32-5f63-45df-a0e7-7e06fc89370a#2015-07-13
+hdfs://NAMENODE-1:8020/tmp/stacktach-load-date.sh-16089/json-in/dt=2015-07-13/20150713-lon-1436745602.762383-aggregate.json.gz#c0007#lon#2015-07-13 23:23:34.852967#2015-07-13#2015-07-13 23:23:34.852967#compute.instance.delete.end#10020025#10009586#req-0032c082-1d62-4d47-8664-1f6dd6c0550e#e48bc44a-6f92-4a9c-af2f-6f54f7c5197e#\N#8d46b28b-ff2f-4fa0-8923-2bb8f38eb255#compute.c-10-21-17-249#compute.c-10-21-17-249#512MB Standard Instance#2#\N#\N#2#\N#linux#base#512#20#20#0#1#512MB Standard Instance#deleted#\N##x64#6.5#org.centos#0#2015-07-13 23:23:04#2015-07-13 23:23:34#testserver778583#\N#\N#\N#\N#INFO#compute.c-10-21-17-249##\N#\N##http://10.21.17.249:9292/images/70d38a32-5f63-45df-a0e7-7e06fc89370a#2015-07-13
+hdfs://NAMENODE-1:8020/tmp/stacktach-load-date.sh-27363/json-in/dt=2015-07-14/20150714-lon-1436832001.643104-aggregate.json.gz#global#lon#2015-07-13 23:23:21.798013#2015-07-13#2015-07-13 23:23:21.798013#compute.instance.update#10020025#10009586#req-0032c082-1d62-4d47-8664-1f6dd6c0550e#1c752096-8ded-4987-92c0-4d4a14e457bf#\N#8d46b28b-ff2f-4fa0-8923-2bb8f38eb255#compute.nova-api07.global.lon.ohthree.com#compute.nova-api07.global.lon.ohthree.com#512MB Standard Instance#2#\N#\N#2#\N#linux#base#512#20#20#0#1#512MB Standard Instance#active#active#deleting#x64#6.5#org.centos#0#2015-07-13 23:23:04##testserver778583#2015-07-13 00:00:00#2015-07-13 23:23:21#\N#\N#INFO#compute.nova-api07.global.lon.ohthree.com#lon!c0007#deleting#deleting##http://10.21.228.68:9292/images/70d38a32-5f63-45df-a0e7-7e06fc89370a#2015-07-14
+hdfs://NAMENODE-1:8020/tmp/stacktach-load-date.sh-27363/json-in/dt=2015-07-14/20150714-lon-1436832001.643104-aggregate.json.gz#c0007#lon#2015-07-13 23:23:34.50907#2015-07-13#2015-07-13 23:23:34.509070#compute.instance.shutdown.end#10020025#10009586#req-0032c082-1d62-4d47-8664-1f6dd6c0550e#5914e1ff-a856-4b2e-9ff5-248bda845c64#\N#8d46b28b-ff2f-4fa0-8923-2bb8f38eb255#compute.c-10-21-17-249#compute.c-10-21-17-249#512MB Standard Instance#2#\N#\N#2#\N#linux#base#512#20#20#0#1#512MB Standard Instance#active#\N#deleting#x64#6.5#org.centos#0#2015-07-13 23:23:04##testserver778583#\N#\N#\N#\N#INFO#compute.c-10-21-17-249##\N#\N##http://10.21.17.249:9292/images/70d38a32-5f63-45df-a0e7-7e06fc89370a#2015-07-14
+hdfs://NAMENODE-1:8020/tmp/stacktach-load-date.sh-27363/json-in/dt=2015-07-14/20150714-lon-1436832001.643104-aggregate.json.gz#c0007#lon#2015-07-13 23:23:34.667797#2015-07-13#2015-07-13 23:23:34.667797#compute.instance.update#10020025#10009586#req-0032c082-1d62-4d47-8664-1f6dd6c0550e#b598240d-ffa9-4525-bdac-81ca422e9ec8#\N#8d46b28b-ff2f-4fa0-8923-2bb8f38eb255#compute.c-10-21-17-249#compute.c-10-21-17-249#512MB Standard Instance#2#\N#\N#2#\N#linux#base#512#20#20#0#1#512MB Standard Instance#deleted#active##x64#6.5#org.centos#0#2015-07-13 23:23:04##testserver778583#2015-07-13 00:00:00#2015-07-13 23:23:34#\N#\N#INFO#compute.c-10-21-17-249##\N#deleting##http://10.21.17.249:9292/images/70d38a32-5f63-45df-a0e7-7e06fc89370a#2015-07-14
+
+[neha8380@GATEWAY-1 scripts]$ hive -e "INSERT OVERWRITE LOCAL DIRECTORY '/home/neha8380/requests' ROW FORMAT DELIMITED FIELDS TERMINATED BY '%' SELECT * FROM stacktach.events where DT between '2015-06-25' and '2015-07-15' AND REQUEST_ID = 'req-0032c082-1d62-4d47-8664-1f6dd6c0550e' AND INSTANCE_ID  = '8d46b28b-ff2f-4fa0-8923-2bb8f38eb255' AND TENANT_ID  = '10020025' ;"
+
+
+
+

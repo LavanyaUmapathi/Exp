@@ -1,0 +1,3 @@
+LOG_PREFIX: cron_mal
+acumen_cron_scripts_dir: /usr/local/acumen-admin/cron
+user: maas

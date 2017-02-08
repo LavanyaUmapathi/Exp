@@ -1,3 +1,0 @@
-jenkins ALL=(ALL) NOPASSWD: ALL
-
-added to sudoers file

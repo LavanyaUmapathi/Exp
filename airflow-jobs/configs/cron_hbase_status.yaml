@@ -1,0 +1,3 @@
+LOG_PREFIX: cron_hbase_status
+acumen_cron_scripts_dir: /usr/local/acumen-admin/cron
+user: hdfs

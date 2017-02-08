@@ -1,0 +1,52 @@
+--hive -f get-configuration-and-error-duration.sql -hiveconf start_date=2015-05-06
+
+use up_time_calculation;
+--GET ENABLED MONITORS
+insert overwrite table tmp_maas_configuration select distinct check_id,SUBSTR(monitoring_zone_id,3) from maas.metrics where dt='${hiveconf:start_date}';
+
+
+select ch.account_id, ac.external_id, en.id, en.label,en.uri,  tmp.check_id, ch.label, ch.type, 
+tmp.check_monitoring_zone,ch.details['port'], ch.timeout, ch.period, ch.target_hostname, ch.target_resolver, ch.disabled, 
+ch.created_at, ch.updated_at, ch.details['url'] 
+from tmp_maas_configuration tmp INNER JOIN maas.checks ch 
+on tmp.check_id = ch.id LEFT OUTER JOIN maas.accounts ac on ch.account_id=ac.id 
+LEFT OUTER JOIN maas.entities en  on ch.entity_id = en.id ;
+
+-- TRANSFORM POOL ERRORS TO ERROR DURATIONS
+
+SET hive.enforce.bucketing=true;
+
+insert overwrite table tmp_error_metrics_bucket select check_id, check_zone, ts, dt from 
+(select distinct check_id,SUBSTR(monitoring_zone_id,3) as check_zone, 
+ ts, dt from maas.metrics where dt='${hiveconf:start_date}' and available=false
+ UNION ALL 
+ select a.check_id, a.check_monitoring_zone as check_zone, a.ts,'${hiveconf:start_date}' as dt from open_errors a JOIN maas.checks b 
+on a.check_id=b.id where b.disabled=false) m;
+
+
+insert overwrite table tmp_good_metrics_bucket select  m.check_id, substr(m.monitoring_zone_id,3) , m.ts 
+ from (select check_id, monitoring_zone_id, ts from maas.metrics where dt = '${hiveconf:start_date}' and available =true) m 
+ JOIN (select distinct check_id from tmp_error_metrics_bucket) tmp on m.check_id=tmp.check_id;
+ 
+ SET hive.enforce.bucketing=true;
+ set hive.input.format=org.apache.hadoop.hive.ql.io.BucketizedHiveInputFormat;
+ set hive.optimize.bucketmapjoin = true;
+ set hive.optimize.bucketmapjoin.sortedmerge = true;
+ 
+ insert overwrite table tmp_error_metrics_duration "+
+select  b.check_id, b.check_monitoring_zone, b.ts, min(g.ts) from 
+tmp_error_metrics_bucket b JOIN tmp_good_metrics_bucket g 
+on  b.check_id=g.check_id and 
+b.check_monitoring_zone=g.check_monitoring_zone 
+WHERE g.ts >= b.ts 
+group by b.check_id, b.check_monitoring_zone, b.ts;
+
+insert overwrite table open_errors 
+select check_id, check_monitoring_zone, start_time from tmp_error_metrics_duration where end_time=0;
+
+select a.check_id, a.check_monitoring_zone, a.start_time, end_time, ch.type,  ch.details['url'], en.uri from 
+  (select check_id, check_monitoring_zone, min(start_time) as start_time, COALESCE(end_time, 0) as end_time 
+ from tmp_error_metrics_duration group by check_id, check_monitoring_zone,end_time) a JOIN maas.checks ch  on a.check_id=ch.id 
+ JOIN maas.entities en  on ch.entity_id = en.id;
+
+  

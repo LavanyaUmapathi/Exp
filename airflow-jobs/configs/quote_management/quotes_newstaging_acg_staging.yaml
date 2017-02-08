@@ -1,0 +1,31 @@
+#### "new staging" -> staging acg_db
+
+################## mongodb section #################
+SAFEPASS_MONGO_PROJECT_ID: 9146
+SAFEPASS_MONGO_CRED_ID: 80569
+MONGO_DBNAME: quote_management_etl_staging
+MONGO_SSL: 1
+
+################## Postgres section #################
+SAFEPASS_POSTGRES_ODS_PROJECT_ID: 9834
+SAFEPASS_POSTGRES_ODS_CRED_ID: 78960
+PSQL_DBNAME: acg_db
+
+################## Hive section #################
+HIVEHOST: admin1.staging.iad.caspian.rax.io
+HIVEPORT: 10000
+HIVEDBNAME: quote_management
+
+################## Jenkins section #################
+HOST: admin1.staging.iad.caspian.rax.io
+JENKINS: https://ci.caspian.rax.io
+JENKINS_TOKEN: WuLL00x 
+
+JENKINS_MONGO_HADOOP_PROJ: mongo-hadoop
+CUR_VER_MONGO_HADOOP: v2015_06_04 
+
+JENKINS_MONGO_HIVE_MAPPING_PROJ: mongo-hive-mapping
+CUR_VER_MONGO_HIVE_MAPPING: v2015_12_13
+
+JENKINS_CASPIAN_DATA_ACCESS_PROJ: caspian-data-access
+CUR_VER_CASPIAN_DATA_ACCESS: v2016_02_05

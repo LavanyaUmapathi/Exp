@@ -1,0 +1,3 @@
+LOG_PREFIX: cron_hdfs_uploader_stacktach_prod
+acumen_cron_scripts_dir: /usr/local/acumen-admin/cron
+user: stacktach

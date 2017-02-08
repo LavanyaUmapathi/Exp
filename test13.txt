@@ -1,3 +1,0 @@
-second transfer in jenkins job
-
-cp $JENKINS_HOME/jobs/$JOB_NAME/workspace/target/*.jar /var/repo/dev/repodata/

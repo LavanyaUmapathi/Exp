@@ -1,0 +1,17 @@
+setup.cfg
+setup.py
+com/__init__.py
+com/rackspace/__init__.py
+com/rackspace/archiving/__init__.py
+com/rackspace/archiving/quality/__init__.py
+com/rackspace/archiving/quality/control/__init__.py
+com/rackspace/archiving/quality/control/constants.py
+com/rackspace/archiving/quality/control/ods_quality_control.py
+com/rackspace/archiving/quality/control/quality_control_queries.py
+hive/__init__.py
+hive/query/__init__.py
+hive/query/hive_query.py
+ods_quality_control.egg-info/PKG-INFO
+ods_quality_control.egg-info/SOURCES.txt
+ods_quality_control.egg-info/dependency_links.txt
+ods_quality_control.egg-info/top_level.txt

@@ -1,7 +1,0 @@
-First test was failure .
-
-Job has not triggered
-
-This is for 2nd test...
-
-add jenkins plugin for this repo

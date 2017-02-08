@@ -1,0 +1,17 @@
+USE [Stage_Two_DWMaint]
+GO
+
+INSERT INTO [dbo].[wrk_process_run]
+           ([Process_Name]
+           ,[Last_Run])
+     VALUES
+           ('newrelic_to_dim_monitor'
+           ,'2016-10-31')
+GO
+INSERT INTO [dbo].[wrk_process_run]
+           ([Process_Name]
+           ,[Last_Run])
+     VALUES
+           ('new_relic_to_poll_state_errors'
+           ,'2016-10-31')
+GO

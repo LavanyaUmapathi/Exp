@@ -1,0 +1,10 @@
+# logs
+LOG_PREFIX: hadoop_status
+
+# cluster config
+NAMENODE_HOSTNAME: 'namenode-1'
+
+# statsd config
+STATSD_HBASE_PREFIX: "hbase.lava-dfw"
+STATSD_HDFS_PREFIX: "hadoop.lava-dfw"
+STATSD_JT_PREFIX: "jt.lava-dfw"

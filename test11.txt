@@ -1,3 +1,0 @@
-The second transfer source is target/volga-hive-1.0.0.jar
-
-two email-ids are seperated by space

@@ -1,0 +1,192 @@
+#!/bin/bash
+#
+# Send an alert to Pager Duty
+#
+# USAGE: alert-to-pager-duty [OPTIONS] [ARGS...]
+#
+# If no ARGS are given, reads all of stdin and uses that as content.
+#
+# See alert-to-pager-duty -h for all OPTIONS
+#
+
+if test -z "$ADMIN"; then
+    ADMIN=/data/acumen-admin
+fi
+. $ADMIN/cron/config.sh
+
+program=`basename $0`
+
+# File system
+base=`mktemp`
+tmp_file="${base}-tmp_file"
+tmp2_file="${base}-tmp2_file"
+response_file="${base}-response_file.log"
+err_file="${base}-err_file.log"
+event_json_file="${base}-event.json"
+
+
+######################################################################
+# Nothing below here should need changing
+
+. $ADMIN/cron/run.sh
+
+if [ -r $PAGER_DUTY_CONFIG_FILE ]; then
+  . $PAGER_DUTY_CONFIG_FILE
+else
+  echo "Pager Duty config file $PAGER_DUTY_CONFIG_FILE not readable" 1>&2
+  exit 0
+fi
+
+if [ -z "$PAGER_DUTY_API_KEY" ]; then
+  # File present but no API key implies pager duty is disabled
+  exit 0
+fi
+
+hostname=`hostname`
+dryrun=0
+service="service"
+verbose=0
+# Sync with copy below
+default_desc="$service on $hostname"
+desc=""
+log_file=""
+uname=`uname -a`
+date=`date`
+
+usage() { 
+  echo "Usage: $program [OPTIONS] [ARGS...]" 1>&2
+  echo "OPTIONS:" 1>&2
+  echo "  -h             Show this help message" 1>&2
+  echo "  -d DESC        Description for alert (default $default_desc)" 1>&2
+  echo "  -l LOG-FILE    Log file name" 1>&2
+  echo "  -n             Show but do not execute commands" 1>&2
+  echo "  -s SERVICE     Service name (default $service)" 1>&2
+  echo "  -v             Run verbose" 1>&2
+}
+
+
+while getopts ":d:hl:ns:v" o ; do
+  case "${o}" in
+    d)
+     desc=$OPTARG
+     ;;
+    h)
+     usage
+     exit 0
+     ;;
+    l)
+     log_file=$OPTARG
+     ;;
+    n)
+     dryrun=1
+     ;;
+    s)
+     service=$OPTARG
+     ;;
+    v)
+     verbose=1;
+     ;;
+    \?)
+      echo "$program: ERROR: Unknown option -$OPTARG" 1>&2
+      echo "$program: Use $program -h for usage" 1>&2
+      exit 1
+      ;;
+   esac
+done
+
+if [ "X$desc" = "X" ]; then
+  # Sync with copy above
+  desc="$service on $hostname"
+fi
+
+shift $((OPTIND-1))
+
+trap "rm -f $tmp_file $tmp2_file $response_file $err_file $event_json_file" 0 9 15
+
+if test $dryrun = 1; then
+  echo "$program: Running in DRYRUN mode - no executing" 1>&2
+fi
+
+if [ $# -lt 1  ]; then
+  cat > $tmp_file
+else
+  echo $@ > $tmp_file
+fi
+chmod 666 $tmp_file
+
+# Limit size to last 50 lines
+# Replace raw newlines with JSON escapes
+# Replace " with \"
+tail -50 $tmp_file | sed -e 's/"/\\"/g' -e 's/$/\\n/' | tr -d '\n' > $tmp2_file
+log=`cat $tmp2_file`
+
+
+
+# PD Nagios plugin makes description like this:
+# HOST_NAME = "HOSTNAME"
+# SERVICE_DESCRIPTION = "SERVICEDESC"
+# SERVICE_STATE = "SERVICESTATE"
+# fields = [SERVICE_DESCRIPTION, SERVICE_STATE, HOST_NAME ]
+# pairs = ["{0}={1}".format(field, self._details[field]) for field in fields]
+# return "; ".join(pairs)
+#
+# e.g.
+# {"agent":{"agent_id":"SOME_ID","queued_at":"SOME_TIME","queued_by":"pd-nagios"},"description":"SERVICEDESC=service=test-service; SERVICESTATE=critical; HOSTNAME=service.test.local","details":{"HOSTNAME":"service.test.local","SERVICEDESC":"service=test-service","SERVICESTATE":"critical","pd_nagios_object":"service"},"event_type":"trigger","incident_key":"event_source=service;host_name=service.test.local;service_desc=service=test-service","service_key":"DUMMY_SERVICE_KEY"}
+
+# Create JSON content for POST
+#   Keys not used here:
+#     "client_url": "https://monitoring.service.com"
+
+# Event API docs
+# https://developer.pagerduty.com/documentation/integration/events/
+# Trigger Event docs
+# https://developer.pagerduty.com/documentation/integration/events/trigger
+cat > $event_json_file <<EOF
+{    
+   "service_key": "$PAGER_DUTY_API_KEY",
+   "event_type": "trigger",
+   "description": "$desc",
+   "client": "$program",
+   "details": {
+       "date" : "$date",
+       "log_file" : "$log_file",
+       "log_tail" : "$log",
+       "hostname" : "$hostname",
+       "uname" : "$uname"
+   }
+}
+EOF
+
+
+# using a bash array here to preserve word splits
+cmd=(curl -H Content-type:\ application/json -X POST -d @$event_json_file $PAGER_DUTY_CREATE_EVENT_API_ENDPOINT)
+# as a string for messages
+cmd_str="${cmd[@]}"
+
+if test $verbose = 1; then
+  echo "$program: Running curl to alert from $event_json_file" 1>&2
+fi
+if test $dryrun = 1; then
+  echo "$program: DRYRUN: would run $cmd_str:" 1>&2
+  cat $event_json_file
+else
+  if test $verbose = 1; then
+    echo "$program: running $cmd_str"
+  fi
+  # Array expansion: Preserves spaces and word splits
+  "${cmd[@]}" > $response_file 2> $err_file
+  status=$?
+  if test $verbose = 1; then
+    echo "$program: curl result $status" 1>&2
+  fi
+  if [ $status != 0 ]; then
+    echo "$program: $cmd_str FAILED with code $status" 1>&2;
+    sed -e 's/^/    /' $err_file  1>&2
+    exit 1
+  else
+    if test $verbose = 1; then
+      echo "$program: Request JSON result:" 1>&2
+      cat $response_file 1>&2
+    fi
+  fi
+fi

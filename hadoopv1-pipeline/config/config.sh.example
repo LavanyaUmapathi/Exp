@@ -1,0 +1,146 @@
+#
+# Configuration file for hadoop V1 ETL jobs
+#
+#
+
+umask 022
+
+########
+# File system
+
+# Working area
+PIPELINE=/data/pipeline
+CONFIG=$PIPELINE/config
+MARKERS=$PIPELINE/markers
+
+# Admin scripts (cron)
+if test -z "$ADMIN"; then
+    ADMIN=/data/acumen-admin
+fi
+
+# CF scripts in $ACUMEN_DATA_ROOT/scripts
+ACUMEN_DATA_ROOT=/data/acumen-data
+
+# Scala Map-Reduce running scripts in $ACUMEN_TOOLS_ROOT/scripts
+ACUMEN_TOOLS_ROOT=/data/acumen-tool
+
+# ETL package root
+ACUMEN_ETL_ROOT=/data/volga-etl-maas
+
+# Map-Reduce
+#   scheduler pool
+MR_SCHEDULER_POOL=misc
+
+# Common ETL config
+#   shared options to hadoop JSON driver jar
+COMMON_ETL_JAR_OPTS="-Dmapred.fairscheduler.pool=$MR_SCHEDULER_POOL -Dmapred.reduce.tasks=50"
+
+# MAAS CF config
+MAAS_CF_HADOOP_USER_NAME=ci
+# Root of dir. subdirs: data, markers
+MAAS_CF_HADOOP_HOME=/user/$MAAS_CF_HADOOP_USER_NAME
+
+# MAAS ETL config
+#   HQLs for the tables
+MAAS_ETL_HQLS="$ACUMEN_ETL_ROOT/schemas/maas"
+#   MaasJSONDriver event type
+MAAS_EVENT_TYPE='metric'
+#   main ETL jar
+MAAS_ETL_JAR="$ACUMEN_ETL_ROOT/volga-etl/volga-etl-1.0.0-dist.jar"
+#   class in jar to run
+MAAS_ETL_JAR_CLASS="com.rackspace.volga.etl.maas.mapreduce.MaasJSONDriver"
+#   number of files from previous day to use
+MAAS_PREVIOUS_DAY_FILES_COUNT=15
+#   make derby TempStatsStore go somewhere writable
+MAAS_ETL_JAR_OPTS="-Dderby.system.home=/tmp"
+#   number of reducers for maas-notifications-load ETL job. ~8G data
+MAAS_ETL_NOTIFICATIONS_LOAD_JAR_OPTS="-Dmapred.reduce.tasks=50"
+########
+
+
+# CLickstream ETL config
+#   HQLs for the tables
+CLICKSTREAM_DDL_DIR="$ACUMEN_ETL_ROOT/schemas/click-stream/ddl"
+
+# Stacktach ETL config
+#   StackTachJSONDriver output file prefix
+STACKTACH_ETL_OUTPUT_PREFIX='event'
+#   main ETL jar
+STACKTACH_ETL_JAR="$MAAS_ETL_JAR"
+#   class in jar to run
+STACKTACH_ETL_JAR_CLASS="com.rackspace.volga.etl.stacktach.mapreduce.StackTachJSONDriver"
+########
+
+# New Relic ETL config
+#   main ETL jar
+NEWRELIC_ETL_JAR="$ACUMEN_ETL_ROOT/volga-etl/volga-etl-1.0.0-dist.jar"
+#   class in jar to run
+NEWRELIC_ETL_JAR_CLASS="com.rackspace.volga.etl.newrelic.mapreduce.NewRelicJSONDriver"
+########
+
+
+# HDFS config
+HDFS_MAAS_USER=maas
+HDFS_MAAS_HOME=/user/$HDFS_MAAS_USER
+HDFS_MAAS_INPUT_DIR="$HDFS_MAAS_HOME/metric-data"
+
+HDFS_CLICKSTREAM_USER=clickstream
+HDFS_CLICKSTREAM_HOME=/user/$HDFS_CLICKSTREAM_USER
+HDFS_CLICKSTREAM_INPUT_DIR="$HDFS_CLICKSTREAM_HOME/hits"
+HDFS_CLICKSTREAM_SCHEMA_DIR="$HDFS_CLICKSTREAM_HOME/schema"
+
+HDFS_STACKTACH_USER=stacktach
+HDFS_STACKTACH_HOME=/user/$HDFS_STACKTACH_USER
+HDFS_STACKTACH_INPUT_DIR="$HDFS_STACKTACH_HOME/v3/prod"
+
+HDFS_NEWRELIC_USER=maas
+HDFS_NEWRELIC_HOME=/user/$HDFS_NEWRELIC_USER
+HDFS_NEWRELIC_INPUT_DIR="$HDFS_NEWRELIC_HOME/newrelic-data"
+
+HDFS_PRIV_USER=hdfs
+
+# Hive config
+HIVE_HDFS_ROOT=/apps/hive/warehouse
+HIVE_MAAS_DATABASE=maas
+HIVE_MAAS_TABLE=metrics
+HIVE_CLICKSTREAM_DATABASE=clickstream
+HIVE_CLICKSTREAM_TABLE=site_catalyst_data
+HIVE_STACKTACH_DATABASE=stacktach
+HIVE_STACKTACH_TABLE=events
+HIVE_NEWRELIC_DATABASE=new_relic
+HIVE_NEWRELIC_MONITORS_TABLE=monitors
+HIVE_NEWRELIC_POLLS_TABLE=polls
+
+# -hiveconf A=B to set (system) java property A to value B
+HIVE_OPTS="-hiveconf mapred.fairscheduler.pool=$MR_SCHEDULER_POOL -hiveconf fs.permissions.umask-mode=022 -hiveconf hive.root.logger=INFO,console -hiveconf derby.stream.error.file=/dev/null -v"
+# Write ERROR+ level messages to 'hive.log' into directory $PWD
+# HIVE_OPTS="$HIVE_OPTS -hiveconf hive.root.logger=ERROR,DRFA -hiveconf hive.log.dir=$PWD"
+
+# Space-separated pair of (event type, Hive table name) pairs
+# Used by maas-account-load.sh
+HIVE_MAAS_TABLE_CONFIG="configuration:accounts alarm:alarms check:checks entity:entities"
+
+# Space-separated list of (file name prefix, table name) pairs
+HIVE_CLICKSTREAM_TABLE_CONFIG="browser:browsers browser_type:browser_types color_depth:color_depths connection_type:connection_types country:countries event:events javascript_version:javascript_versions languages:languages operating_systems:operating_systems plugins:plugins referrer_type:referrer_types resolution:resolutions search_engines:search_engines"
+
+# Other config
+SECONDS_IN_DAY=86400
+
+# statsd config
+STATSD_HBASE_PREFIX="hbase.lava-dfw"
+STATSD_HDFS_PREFIX="hadoop.lava-dfw"
+STATSD_JT_PREFIX="jt.lava-dfw"
+
+# cluster config
+NAMENODE_HOSTNAME='namenode-1'
+
+# flume config
+# Directory to write log files; move them atomically here
+FLUME_JOB_MESSAGES_SPOOL_DIR=/var/log/flume/job-messages-spool
+
+# pager duty config
+PAGER_DUTY_CONFIG_FILE="/etc/acumen/pager-duty.conf"
+PAGER_DUTY_CREATE_EVENT_API_ENDPOINT="https://events.pagerduty.com/generic/2010-04-15/create_event.json"
+
+# Jars
+CSV_SERDE_JAR="/usr/lib/hive/lib/csv-serde-1.1.2-0.11.0-all.jar"

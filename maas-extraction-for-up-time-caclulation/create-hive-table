@@ -1,0 +1,47 @@
+create database if not exists up_time_calculation;
+
+use up_time_calculation;
+
+drop table if exists tmp_maas_configuration;
+
+CREATE  TABLE if not exists tmp_maas_configuration(
+  check_id string,
+  check_monitoring_zone string);
+  
+drop table if exists tmp_error_metrics_bucket;
+  
+CREATE  TABLE if not exists tmp_error_metrics_bucket(
+  check_id string,
+  check_monitoring_zone string,
+  ts bigint,
+  dt string)
+CLUSTERED BY (
+  check_id)
+INTO 16 BUCKETS;
+
+drop table if exists tmp_good_metrics_bucket;
+
+CREATE  TABLE if not exists tmp_good_metrics_bucket(
+  check_id string,
+  check_monitoring_zone string,
+  ts bigint)
+CLUSTERED BY (
+  check_id)
+INTO 16 BUCKETS;
+
+drop table if exists open_errors;
+
+CREATE  TABLE if not exists open_errors(
+  check_id string,
+  check_monitoring_zone string,
+  ts bigint);
+
+drop table if exists  tmp_error_metrics_duration;
+
+CREATE  TABLE tmp_error_metrics_duration(
+  check_id string,
+  check_monitoring_zone string,
+  start_time bigint,
+  end_time bigint);
+
+

@@ -1,0 +1,42 @@
+<assembly>
+    <id>dist</id>
+    <formats>
+        <format>jar</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+
+    <fileSets>
+        <fileSet>
+            <directory>${project.build.directory}/lib</directory>
+            <includes>
+                <include>**</include>
+            </includes>
+            <useDefaultExcludes>true</useDefaultExcludes>
+            <excludes>
+                <exclude>**/${project.artifactId}-${project.version}.jar</exclude>
+                <exclude>**/volga-etl-1.0.0.jar</exclude>
+                <exclude>**/slf4j-api*.jar</exclude>
+                <exclude>**/slf4j-log4j12*</exclude>
+                <exclude>**/jcl-over-slf4j*</exclude>
+                <exclude>**/hadoop*.jar</exclude>
+                <exclude>**/mockito*.jar</exclude>
+                <exclude>**/junit*.jar</exclude>
+                <exclude>**/powermock*.jar</exclude>
+                <exclude>**/mrunit*.jar</exclude>
+                <exclude>**/spring-test*.jar</exclude>
+                <exclude>**/jayway*.jar</exclude>
+            </excludes>
+
+            <outputDirectory>/lib</outputDirectory>
+        </fileSet>
+
+
+        <fileSet>
+            <directory>${project.build.directory}/classes</directory>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
+
+
+    </fileSets>
+</assembly>

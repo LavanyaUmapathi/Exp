@@ -1,0 +1,6 @@
+{
+    "authurl" : "https://auth.api.rackspacecloud.com/v1.0",
+    "user" : "PUT-USER-HERE",
+    "key" : "PUT-KEY-HERE",
+    "container" : "metric-data"
+}

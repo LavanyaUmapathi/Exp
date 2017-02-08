@@ -1,3 +1,0 @@
-Trigger 7 got failed
-
-The lifecycle phase given for jenkins job is : clean package

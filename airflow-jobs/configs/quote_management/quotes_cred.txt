@@ -1,0 +1,13 @@
+#SAFEPASS mongo settings
+9146=project_id GSCS mongo
+71542=cred_id int SSL ebi_read
+73800=cred_id staging NONSSL ebi_read
+79349=cred_id staging SSL ebi_read
+
+#SAFEPASS ACG STAGING
+9834=project postgres staging
+78960=cred_id ebi_caspian_qa staging
+
+#SAFEPASS ACG PROD
+9838=project postgres production
+78962=cred_id ebi_caspian_prod production

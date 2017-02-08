@@ -1,4 +1,0 @@
-From post execution following 2 lines removed
-
-sudo chmod 777 $JENKINS_HOME/jobs/$JOB_NAME/workspace/target/*.jar
-sudo chmod 777 $JENKINS_HOME/jobs/$JOB_NAME/workspace/target/rpm/*/RPMS/noarch/*.rpm

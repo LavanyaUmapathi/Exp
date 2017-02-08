@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/hadoop"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/hadoop http://www.springframework.org/schema/hadoop/spring-hadoop.xsd">
+
+    <configuration>
+        fs.defaultFS=${hd.fs}
+        io.sort.mb=${io.sort.mb:640mb}
+        mapred.reduce.tasks=${mapred.reduce.tasks:1}
+        mapred.job.tracker=${hd.jt:local}
+        mapred.child.java.opts=${mapred.child.java.opts}
+    </configuration>
+
+    <script id="setUpJob" location="scripts/setup-job.groovy">
+        <property name="outputDir" value="${mapred.output.path}"/>
+    </script>
+
+    <script-tasklet id="setUpJobTasklet" script-ref="setUpJob"/>
+
+    <job id="metricsMR"
+         input-path="${mapred.input.path}"
+         output-path="${mapred.output.path}"
+         mapper="com.rackspace.volga.etl.mapreduce.mr.GenericETLMapper"
+         reducer="com.rackspace.volga.etl.mapreduce.mr.GenericETLReducer"
+         input-format="org.apache.hadoop.mapreduce.lib.input.TextInputFormat"
+         output-format="org.apache.hadoop.mapreduce.lib.output.TextOutputFormat"
+         key="com.rackspace.volga.etl.mapreduce.lib.io.TextArrayWritable"
+         value="org.apache.hadoop.io.NullWritable"
+         map-key="org.apache.hadoop.io.Text"
+         map-value="org.apache.hadoop.io.Text"
+         jar-by-class="com.rackspace.volga.etl.mapreduce.mr.GenericETLMapper">
+        volga.etl.dto.class=com.rackspace.volga.etl.maas.dto.json.Metric
+    </job>
+
+    <job id="notificationsMR"
+         input-path="${mapred.input.path}"
+         output-path="${mapred.output.path}"
+         mapper="com.rackspace.volga.etl.mapreduce.mr.GenericETLMapper"
+         reducer="com.rackspace.volga.etl.mapreduce.mr.GenericETLReducer"
+         input-format="org.apache.hadoop.mapreduce.lib.input.TextInputFormat"
+         output-format="org.apache.hadoop.mapreduce.lib.output.TextOutputFormat"
+         key="com.rackspace.volga.etl.mapreduce.lib.io.TextArrayWritable"
+         value="org.apache.hadoop.io.NullWritable"
+         map-key="org.apache.hadoop.io.Text"
+         map-value="org.apache.hadoop.io.Text"
+         jar-by-class="com.rackspace.volga.etl.mapreduce.mr.GenericETLMapper">
+        volga.etl.dto.class=com.rackspace.volga.etl.maas.dto.json.Notification
+    </job>
+
+    <job id="accountsMR"
+         input-path="${mapreduce.input.path}"
+         output-path="${mapreduce.output.path}"
+         mapper="com.rackspace.volga.etl.mapreduce.mr.GenericETLMapper"
+         reducer="com.rackspace.volga.etl.mapreduce.mr.GenericETLReducer"
+         input-format="org.apache.hadoop.mapreduce.lib.input.TextInputFormat"
+         output-format="org.apache.hadoop.mapreduce.lib.output.TextOutputFormat"
+         key="com.rackspace.volga.etl.mapreduce.lib.io.TextArrayWritable"
+         value="org.apache.hadoop.io.NullWritable"
+         map-key="org.apache.hadoop.io.Text"
+         map-value="org.apache.hadoop.io.Text"
+         jar-by-class="com.rackspace.volga.etl.mapreduce.mr.GenericETLMapper">
+        volga.etl.dto.class=com.rackspace.volga.etl.maas.dto.json.Configuration
+    </job>
+
+    <job-tasklet job-ref="metricsMR" id="metricsJobTasklet"/>
+    <job-tasklet job-ref="notificationsMR" id="notificationsJobTasklet"/>
+    <job-tasklet job-ref="accountsMR" id="accountsJobTasklet"/>
+
+
+    <!--HIVE STUFF FOR LATER-->
+
+    <hive-client-factory host="${hive.host}" port="${hive.port:10000}"/>
+
+    <hive-tasklet id="load-notifications">
+        <script location="classpath:hive/ddl/notifications-load.hql"/>
+    </hive-tasklet>
+
+    <hive-tasklet id="load-metrics">
+        <script location="classpath:hive/ddl/metrics-load.hql">
+            <arguments>INPUT_PATH=${mapreduce.output.path}</arguments>
+        </script>
+    </hive-tasklet>
+
+</beans:beans>

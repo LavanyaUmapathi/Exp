@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mappings xmlns="http://dozer.sourceforge.net"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://dozer.sourceforge.net
+          http://dozer.sourceforge.net/schema/beanmapping.xsd">
+    <configuration>
+        <custom-converters>
+            <converter type="com.rackspace.volga.etl.maas.transform.dozer.jackson.NotificationJacksonConverter">
+                <class-a>com.rackspace.volga.etl.maas.dto.json.Notification</class-a>
+                <class-b>java.lang.String</class-b>
+            </converter>
+            <converter type="com.rackspace.volga.etl.maas.transform.dozer.jackson.MetricsJacksonConverter">
+                <class-a>com.rackspace.volga.etl.maas.dto.json.Metric</class-a>
+                <class-b>java.lang.String</class-b>
+            </converter>
+            <converter type="com.rackspace.volga.etl.maas.transform.dozer.jackson.ConfigurationJacksonConverter">
+                <class-a>com.rackspace.volga.etl.maas.dto.json.Configuration</class-a>
+                <class-b>java.lang.String</class-b>
+            </converter>
+            <converter type="com.rackspace.volga.etl.maas.transform.dozer.hive.ConfigurationMappedRowsConverter">
+                <class-a>com.rackspace.volga.etl.maas.dto.json.Configuration</class-a>
+                <class-b>com.rackspace.volga.etl.common.data.MappedRows</class-b>
+            </converter>
+            <converter type="com.rackspace.volga.etl.maas.transform.dozer.hive.NotificationMappedRowsConverter">
+                <class-a>com.rackspace.volga.etl.maas.dto.json.Notification</class-a>
+                <class-b>com.rackspace.volga.etl.common.data.MappedRows</class-b>
+            </converter>
+            <converter type="com.rackspace.volga.etl.maas.transform.dozer.hive.MetricsMappedRowsConverter">
+                <class-a>com.rackspace.volga.etl.maas.dto.json.Metric</class-a>
+                <class-b>com.rackspace.volga.etl.common.data.MappedRows</class-b>
+            </converter>
+            <converter type="com.rackspace.volga.etl.stacktach.dozer.SystemEventConverter">
+                <class-a>com.rackspace.volga.etl.stacktach.dto.json.SystemEvent</class-a>
+                <class-b>com.rackspace.volga.etl.common.data.MappedRows</class-b>
+            </converter>
+            <converter type="com.rackspace.volga.etl.common.transform.JSONPathConverter">
+                <class-a>com.rackspace.volga.etl.stacktach.dto.json.SystemEvent</class-a>
+                <class-b>com.rackspace.volga.etl.common.data.MappedRows</class-b>
+            </converter>
+            <converter type="com.rackspace.volga.etl.common.transform.JSONPathConverter">
+                <class-a>com.jayway.jsonpath.JsonPath</class-a>
+                <class-b>java.lang.String</class-b>
+            </converter>
+            <converter type="com.rackspace.volga.etl.newrelic.transform.dozer.jackson.MonitorsJacksonConverter">
+                <class-a>com.rackspace.volga.etl.newrelic.dto.json.Monitor</class-a>
+                <class-b>java.lang.String</class-b>
+            </converter>
+            <converter type="com.rackspace.volga.etl.newrelic.transform.dozer.jackson.PollsJacksonConverter">
+                <class-a>com.rackspace.volga.etl.newrelic.dto.json.Polls</class-a>
+                <class-b>java.lang.String</class-b>
+            </converter>
+            <converter type="com.rackspace.volga.etl.newrelic.transform.dozer.hive.MonitorsMappedRowsConverter">
+                <class-a>com.rackspace.volga.etl.newrelic.dto.json.Monitor</class-a>
+                <class-b>com.rackspace.volga.etl.common.data.MappedRows</class-b>
+            </converter>
+            <converter type="com.rackspace.volga.etl.newrelic.transform.dozer.hive.PollsMappedRowsConverter">
+                <class-a>com.rackspace.volga.etl.newrelic.dto.json.Polls</class-a>
+                <class-b>com.rackspace.volga.etl.common.data.MappedRows</class-b>
+            </converter>
+        </custom-converters>
+    </configuration>
+    <mapping map-id="fact_st_events">
+        <class-a>com.jayway.jsonpath.DocumentContext</class-a>
+        <class-b>com.rackspace.volga.etl.common.data.MappedRows</class-b>
+        <field custom-converter="com.rackspace.volga.etl.stacktach.dozer.JSONPathToMappedRowsConverter"
+               custom-converter-param="mappings/stacktach/event_definitions.yaml">
+            <a key="json">this</a>
+            <b key="rows">this</b>
+        </field>
+    </mapping>
+
+</mappings>

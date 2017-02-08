@@ -1,0 +1,13 @@
+{
+    "id": "40627039-a9c5-45b0-a7ff-525a73e9a500",
+    "status": "ENABLED",
+    "name": "681190-avreporting-web-monitor",
+    "createdAt": "2016-05-06T17:44:07.431+0000",
+    "modifiedAt": "0",
+    "frequency": 1440,
+    "location": "Dallas, TX",
+    "device": "681190",
+    "account": "999999",
+    "type": "SCRIPT_BROWSER",
+    "friendlyName": "to be determined"
+}

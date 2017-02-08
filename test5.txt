@@ -1,3 +1,0 @@
-The maven phase added 
-
-org.codehaus.mojo:rpm-maven-plugin:2.1.5:rpm

@@ -1,0 +1,42 @@
+[DEFAULT]
+# glob() of source files
+source_glob=*
+# processed policy: None or 'rename' or 'delete'
+source_processed_policy=rename
+source_rename_suffix=.processed
+# how many seconds to consider a file too new to move
+source_new_seconds=600
+# how many days after which <source_rename_suffix> files should be deleted
+source_delete_days=7
+dest_mode=644
+# HDFS priviledge user name (optional; default None)
+#hdfs_priv_user=hdfs
+dest_overwrite=no
+transform_gzip=no
+# For validation
+process_md5sum=no
+process_sha256sum=no
+# Max files to upload per-section (optional; default 10)
+#max_files=10
+
+[hits-data]
+source_dir=/home/ebi_informatica_dev/clickstream/incoming/hit_data
+source_glob=*.csv
+dest_dir=/user/clickstream/hits
+dest_user=clickstream
+transform_gzip=yes
+process_md5sum=yes
+process_sha256sum=yes
+# 1 day
+max_files=24
+
+[hits-schema]
+source_dir=/home/ebi_informatica_dev/clickstream/incoming/lookup
+source_glob=*.csv
+dest_dir=/user/clickstream/schema
+dest_user=clickstream
+dest_overwrite=yes
+process_sha256sum=yes
+source_delete_days=2
+# number of tables is 14
+max_files=14

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Flume name="flumeAppender" compress="false" agentRetries="2" connectTimeout="10000">
+            <Agent host="gw1.prod.dfw.ci.rax.io" port="10001"/>
+            <RFC5424Layout enterpriseNumber="18060" includeMDC="true" appName="AcumenETL"/>
+        </Flume>
+        <Console name="ETLBadDataLogger" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+        </Console>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="org.springframework" level="info" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+        </Logger>
+        <Logger name="org.apache.hadoop.mapred" level="debug" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+        </Logger>
+        <Logger name="ETLBadDataLogger" level="debug">
+            <AppenderRef ref="flumeAppender"/>
+        </Logger>
+        <Root level="warn">
+            <AppenderRef ref="STDOUT"/>
+        </Root>
+    </Loggers>
+</Configuration>
+

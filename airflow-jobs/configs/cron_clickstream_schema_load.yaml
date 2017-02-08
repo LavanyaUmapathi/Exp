@@ -1,0 +1,3 @@
+LOG_PREFIX: cron_clickstream_schema_load
+acumen_cron_scripts_dir: /usr/local/acumen-admin/cron
+user: clickstream
