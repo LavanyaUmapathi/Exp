@@ -44,6 +44,7 @@
               <license>Rackspace Proprietary</license>
               <description>RPM package for project</description>
               <group>volga</group>
+              <release> ${BUILD_NUMBER} </release>
               <targetOS>linux</targetOS>
               <mappings>
                   <mapping>
