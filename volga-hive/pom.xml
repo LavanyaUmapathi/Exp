@@ -6,7 +6,7 @@
 
     <groupId>com.rackspace.data</groupId>
     <artifactId>volga-hive</artifactId>
-    <version>$CHANGE_ID</version>
+    <version>${BUILD_NUMBER}</version>
 
 
     <parent>
