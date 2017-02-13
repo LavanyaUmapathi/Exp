@@ -1,0 +1,7 @@
+In pre step
+
+to debug 
+
+added command
+
+git describe --tags
