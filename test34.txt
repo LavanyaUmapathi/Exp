@@ -1,0 +1,5 @@
+Build number 34
+
+add command 'pwd' in post shell script
+
+to know the working dir
