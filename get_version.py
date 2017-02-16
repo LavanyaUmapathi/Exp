@@ -37,4 +37,6 @@ def _get_version():
     return "%s.%s.%s" % (major, minor, rev)
 
 if __name__ == "__main__":
-    print _get_version()
+    VERSION = _get_version()
+    os.environ['VERSION_NUMBER'] = VERSION
+    print os.environ['VERSION_NUMBER']
