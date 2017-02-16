@@ -1,0 +1,7 @@
+Checked inject variable section in maven job
+
+echo $PATH
+
+VERSION_NUMBER=`python get_version.py`
+
+echo $VERSION_NUMBER
