@@ -47,7 +47,7 @@
               <targetOS>linux</targetOS>
               <mappings>
                   <mapping>
-                      <directory>/home/test/</directory>
+                      <directory>/usr/local/acumen-hive/</directory>
                       <dependency />
                       <artifact />
                   </mapping>
