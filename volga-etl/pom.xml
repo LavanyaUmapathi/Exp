@@ -6,7 +6,7 @@
 
     <groupId>com.rackspace.data</groupId>
     <artifactId>volga-etl</artifactId>
-    <version>${BUILD_NUMBER}</version>
+    <version>${version.number}</version>
     <parent>
         <groupId>com.rackspace.data</groupId>
         <artifactId>volga</artifactId>
@@ -250,7 +250,7 @@
               <targetOS>linux</targetOS>
               <mappings>
                   <mapping>
-                      <directory>/home/test/</directory>
+                      <directory>/usr/local/acumen-etl/</directory>
                       <dependency />
                       <artifact />
                   </mapping>
