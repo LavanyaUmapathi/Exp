@@ -250,7 +250,7 @@
               <targetOS>linux</targetOS>
               <mappings>
                   <mapping>
-                      <directory>/usr/local/acumen-etl/</directory>
+                      <directory>/home/lavanya/rpmtest/etl/</directory>
                       <dependency />
                       <artifact />
                   </mapping>
