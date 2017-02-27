@@ -47,7 +47,7 @@
               <targetOS>linux</targetOS>
               <mappings>
                   <mapping>
-                      <directory>/usr/local/acumen-hive/</directory>
+                      <directory>/home/lavanya/rpmtest/hive/</directory>
                       <dependency />
                       <artifact />
                   </mapping>
