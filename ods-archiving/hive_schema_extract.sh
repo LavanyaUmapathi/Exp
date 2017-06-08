@@ -1,3 +1,4 @@
+echo $1
 rm -f tableNames.txt
 rm -f HiveTableDDL.txt
 hive -e "use $1; show tables;" > $1_tableNames.txt
