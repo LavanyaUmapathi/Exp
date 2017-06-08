@@ -1,3 +1,0 @@
-git push origin --tags
-
-git push origin v1.5

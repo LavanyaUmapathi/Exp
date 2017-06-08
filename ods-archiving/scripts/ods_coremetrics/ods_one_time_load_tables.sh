@@ -1,0 +1,10 @@
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_coremetrics coremetrics_netscape_plugin dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_coremetrics coremetrics_pageview dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_coremetrics coremetrics_clickstream dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_coremetrics coremetrics_technical dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_coremetrics marketing_channel dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_coremetrics coremetrics_registration dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_coremetrics coremetrics_shopping_cart dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_coremetrics coremetrics_registration_cookies dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_coremetrics coremetrics_order dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_coremetrics coremetrics_product dbo true 

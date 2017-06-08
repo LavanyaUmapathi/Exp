@@ -1,0 +1,32 @@
+#/home/airflow/airflow-jobs/scripts/ods_archiving/ods_incremental_non_partitoned_table_load.sh operational_reporting_core tckt_message modification_date CORE_Prod true true false
+#/home/airflow/airflow-jobs/scripts/ods_archiving/get_last_records.sh operational_reporting_core tckt_message tckt_messageid modification_date false false
+#/home/airflow/airflow-jobs/scripts/ods_archiving/ods_incremental_non_partitoned_table_load.sh operational_reporting_core xref_server_ticket xref_server_ticket_slony_id CORE_Prod true false false
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_partitioned_table_load.sh operational_reporting_core tckt_work_xref_tckt_queue dw_timestamp CORE_Prod true true false
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_partitioned_table_load.sh operational_reporting_core mntr_monitoredservice dw_timestamp CORE_Prod true true false
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_partitioned_table_load.sh operational_reporting_core encore_virt_audit dw_timestamp LOGGING true true false
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_partitioned_table_load.sh operational_reporting_core scheduled_service_status_reason dw_timestamp CORE_Prod true true false
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_partitioned_table_load.sh operational_reporting_core acct_xref_account_issuedsurvey dw_timestamp CORE_Prod true true false
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_partitioned_table_load.sh operational_reporting_core upgd_log_completion dw_timestamp CORE_Prod true true false
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_partitioned_table_load.sh operational_reporting_core team_change_counter dw_timestamp CORE_Prod false true false
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_partitioned_table_load.sh operational_reporting_core revn_revenue dw_timestamp CORE_Prod false true false
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_partitioned_table_load.sh operational_reporting_core xref_employee_number_contact dw_timestamp CORE_Prod false true false
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_partitioned_table_load.sh operational_reporting_core devices_no_children dw_timestamp LOGGING false true false
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_partitioned_table_load.sh operational_reporting_core sku_attribute_enum dw_timestamp CORE_Prod false true false
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_partitioned_table_load.sh operational_reporting_core acct_highprofiles dw_timestamp CORE_Prod false true false
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_partitioned_table_load.sh operational_reporting_core tckt_product_suite_xref_action dw_timestamp CORE_Prod false true false
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh operational_reporting_core upgd_timeslot CORE_Prod false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh operational_reporting_core tckt_queue_xref_product_suite CORE_Prod false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh operational_reporting_core tckt_product_suite CORE_Prod false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh operational_reporting_core acct_val_teammemberrole CORE_Prod false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh operational_reporting_core revn_val_revenuetype CORE_Prod false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh operational_reporting_core revn_val_revenuelogtype CORE_Prod false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh operational_reporting_core acct_xref_accounttype_team CORE_Prod false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh operational_reporting_core acct_val_accountrole CORE_Prod false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh operational_reporting_core sku_attribute_type CORE_Prod false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh operational_reporting_core acct_val_monitoringlevel CORE_Prod false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh operational_reporting_core mntr_val_transactionstatus CORE_Prod false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh operational_reporting_core comp_val_builderrorsevtype CORE_Prod false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh operational_reporting_core acct_val_segmentmemberrole CORE_Prod false 
+#/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh operational_reporting_core mntr_floodalert CORE_Prod false 
+#/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh operational_reporting_core tckt_queuecolumn CORE_Prod false 
+#/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh operational_reporting_core hypervisors_xref_virtual_machines_dropout LOGGING false 

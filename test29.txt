@@ -1,4 +1,0 @@
-sudo cp $JENKINS_HOME/jobs/$JOB_NAME/workspace/target/*.jar /var/repo/dev/repodata/ || true
-sudo cp $JENKINS_HOME/jobs/$JOB_NAME/workspace/target/rpm/*/RPMS/noarch/*.rpm /var/repo/dev/repodata/ || true
-sudo cp $JENKINS_HOME/jobs/$JOB_NAME/workspace/*/target/*.jar /var/repo/dev/repodata/ || true
-sudo cp $JENKINS_HOME/jobs/$JOB_NAME/workspace/*/target/rpm/*/RPMS/noarch/*.rpm /var/repo/dev/repodata/ || true

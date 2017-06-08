@@ -31,7 +31,7 @@
         <jackson2.version>2.0.2</jackson2.version>
         <powermock.version>1.5.5</powermock.version>
         <log4j.version>2.2</log4j.version>
-	<version.number>${env.VERSION_NUMBER}</version.number>
+        <version.number>${env.VERSION_NUMBER}</version.number>
     </properties>
 
     <profiles>

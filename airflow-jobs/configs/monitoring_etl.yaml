@@ -1,5 +1,0 @@
-LOG_PREFIX: monitoring_etl
-acumen_cron_scripts_dir: /usr/local/acumen-admin/cron
-acumen_scripts_dir: /usr/local/acumen-admin
-acumen_python_dir: /usr/local/acumen-data/scripts
-user: maas

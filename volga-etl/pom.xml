@@ -33,9 +33,9 @@
             </properties>
         </profile>
     </profiles>
-	
-	<dependencies>
-
+  
+    <dependencies>
+   
         <dependency>
             <groupId>org.apache.hive</groupId>
             <artifactId>hive-service</artifactId>
@@ -88,7 +88,7 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-jcl</artifactId>
         </dependency>
@@ -138,7 +138,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-		        <dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
         </dependency>
@@ -226,130 +226,193 @@
         <dependency>
             <groupId>org.apache.mrunit</groupId>
             <artifactId>mrunit</artifactId>
-            <version>1.1.0</version>
+	    <version>1.1.0</version>
             <classifier>hadoop2</classifier>
             <scope>test</scope>
         </dependency>
     </dependencies>
-	
+
 	<build>
-        <plugins>
+		<plugins>
 			<plugin>
-			<groupId>org.codehaus.mojo</groupId>
-			<artifactId>rpm-maven-plugin</artifactId>
-			<version>2.1.5</version>
-			<executions><execution>
-              <goals>
-                  <goal>rpm</goal>
-              </goals>
-			</execution></executions>
-			<configuration>
-              <license>Rackspace Proprietary</license>
-              <description>RPM package for project</description>
-              <group>volga</group>
-              <targetOS>linux</targetOS>
-              <mappings>
-                  <mapping>
-                      <directory>/home/lavanya/rpmtest/etl/</directory>
-                      <dependency />
-                      <artifact />
-                  </mapping>
-              </mappings>
-			</configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+            	<artifactId>maven-shade-plugin</artifactId>
+            	<version>2.3</version>
+				<executions>
+	                <execution>
+	                    <phase>package</phase>
+	                    <goals>
+	                        <goal>shade</goal>
+	                    </goals>
+	                    <configuration>
+	                        <minimizeJar>true</minimizeJar>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
+	                    </configuration>
+	                </execution>
+	            </executions>			
+	        </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>rpm-maven-plugin</artifactId>
+				<version>2.1.5</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>rpm</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<license>Rackspace Proprietary</license>
+					<description>ETL processes and tools for feeding Caspian data lake</description>
+					<group>volga</group>
+					<targetOS>linux</targetOS>
+					<mappings>
+						<mapping>
+							<directory>/usr/local/volga-etl</directory>
+							<artifact />
+							<sources>
+ 								<softlinkSource>
+	       							<destination>volga-etl.jar</destination>
+									<location>volga-etl-${version.number}.jar</location>
+								</softlinkSource>
+								<softlinkSource>
+	       							<destination>volga-etl-1.0.0.jar</destination>
+									<location>volga-etl-${version.number}.jar</location>
+								</softlinkSource>
+								<softlinkSource>
+	       							<destination>volga-etl-1.0.0-dist.jar</destination>
+									<location>volga-etl-${version.number}.jar</location>
+								</softlinkSource>
+								<source>
+									<location>pipeline</location>
+									<excludes>scripts</excludes>
+								</source>
+							</sources>
+						</mapping>
+					    <mapping>
+						  <directory>/usr/local/volga-etl/scripts</directory>
+						    <sources>
+							  <source>
+							    <location>pipeline/scripts</location>
+							  </source>
+							</sources>
+						</mapping>
+						<mapping>
+							<directory>/usr/local/volga-etl/schemas</directory>
+							<sources>
+								<source>
+									<location>target/classes/schemas</location>
+								</source>
+							</sources>
+						</mapping>
+						<mapping>
+							<directory>/home/maas/metric_report</directory>
+							<username>maas</username>
+							<groupname>users</groupname>
+							<filemode>755</filemode>
+							<sources>
+								<source>
+									<location>target/classes/maas/metric_report/</location>
+								</source>
+							</sources>
+						</mapping>
+					</mappings>
+				</configuration>
 			</plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
-                <configuration>
-                  <!--
-                  <compilerArgument>-Xlint:all</compilerArgument>
-                  <showWarnings>true</showWarnings>
-                  <showDeprecation>true</showDeprecation>
-                  -->
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <configuration>
-                    <formats>
-                        <format>html</format>
-                        <format>xml</format>
-                    </formats>
-                    <check>
-                        <branchRate>75</branchRate>
-                        <lineRate>75</lineRate>
-                        <haltOnFailure>true</haltOnFailure>
-                        <totalBranchRate>75</totalBranchRate>
-                        <totalLineRate>75</totalLineRate>
-                        <packageLineRate>75</packageLineRate>
-                        <packageBranchRate>75</packageBranchRate>
-                        <regexes>
-                            <regex>
-                                <pattern>com.rackspace.volga.etl.common.data.*</pattern>
-                                <branchRate>0</branchRate>
-                                <lineRate>0</lineRate>
-                            </regex>
-                        </regexes>
-                    </check>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<!-- <compilerArgument>-Xlint:all</compilerArgument> <showWarnings>true</showWarnings> 
+						<showDeprecation>true</showDeprecation> -->
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<configuration>
+					<formats>
+						<format>html</format>
+						<format>xml</format>
+					</formats>
+					<check>
+						<branchRate>75</branchRate>
+						<lineRate>75</lineRate>
+						<haltOnFailure>true</haltOnFailure>
+						<totalBranchRate>75</totalBranchRate>
+						<totalLineRate>75</totalLineRate>
+						<packageLineRate>75</packageLineRate>
+						<packageBranchRate>75</packageBranchRate>
+						<regexes>
+							<regex>
+								<pattern>com.rackspace.volga.etl.common.data.*</pattern>
+								<branchRate>0</branchRate>
+								<lineRate>0</lineRate>
+							</regex>
+						</regexes>
+					</check>
 					<instrumentation>
-                        <ignores>
-                            <ignore>com.rackspace.volga.etl.common.data.*</ignore>
-                            <ignore>com.rackspace.volga.etl.maas.dto.json.*</ignore>
-                            <ignore>com.rackspace.volga.etl.stacktach.dto.json.*</ignore>
-                        </ignores>
-                        <excludes>
-                            <exclude>com/rackspace/volga/etl/common/data/*.class</exclude>
-                            <exclude>com/rackspace/volga/etl/spring/run/JobRunner*.class</exclude>
-                            <exclude>com/rackspace/volga/etl/spring/reporting/PagerDutyIncidentReporter.class</exclude>
-                            <exclude>com/rackspace/volga/etl/maas/dto/json/*.class</exclude>
-                            <exclude>com/rackspace/volga/etl/stacktach/dto/json/*.class</exclude>
-                            <exclude>com/rackspace/volga/hive/udf/*.class</exclude>
-                            <exclude>com/rackspace/volga/etl/mapreduce/args/CommonOptions.class</exclude>
-                            <exclude>com/rackspace/volga/etl/mapreduce/mr/ETLDriverUtils.class</exclude>
-                            <exclude>com/rackspace/volga/etl/mapreduce/lib/io/TextArrayWritable.class</exclude>
-                        </excludes>
-                    </instrumentation>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>clean</goal>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <finalName>${spring.boot.jar.name}</finalName>
-                    <classifier>spring</classifier>
-                    <mainClass>${spring.boot.main.class}</mainClass>
-                    <excludeGroupIds>org.slf4j</excludeGroupIds>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-	<reporting>
+						<ignores>
+							<ignore>com.rackspace.volga.etl.common.data.*</ignore>
+							<ignore>com.rackspace.volga.etl.maas.dto.json.*</ignore>
+							<ignore>com.rackspace.volga.etl.stacktach.dto.json.*</ignore>
+						</ignores>
+						<excludes>
+							<exclude>com/rackspace/volga/etl/common/data/*.class</exclude>
+							<exclude>com/rackspace/volga/etl/spring/run/JobRunner*.class</exclude>
+							<exclude>com/rackspace/volga/etl/spring/reporting/PagerDutyIncidentReporter.class</exclude>
+							<exclude>com/rackspace/volga/etl/maas/dto/json/*.class</exclude>
+							<exclude>com/rackspace/volga/etl/stacktach/dto/json/*.class</exclude>
+							<exclude>com/rackspace/volga/hive/udf/*.class</exclude>
+							<exclude>com/rackspace/volga/etl/mapreduce/args/CommonOptions.class</exclude>
+							<exclude>com/rackspace/volga/etl/mapreduce/mr/ETLDriverUtils.class</exclude>
+							<exclude>com/rackspace/volga/etl/mapreduce/lib/io/TextArrayWritable.class</exclude>
+						</excludes>
+					</instrumentation>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>clean</goal>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
+	        <!--
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<finalName>${spring.boot.jar.name}</finalName>
+					<classifier>spring</classifier>
+					<mainClass>${spring.boot.main.class}</mainClass>
+					<excludeGroupIds>org.slf4j</excludeGroupIds>
+				</configuration>
+			</plugin>
+			-->
+		</plugins>
+	</build>
+    <reporting>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -367,6 +430,3 @@
     </reporting>
 
 </project>
-
-		
-

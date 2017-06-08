@@ -1,0 +1,9 @@
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh evapt_ods products_invoiceuk Stage true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh evapt_ods bil_invoice_itemtype dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh evapt_ods products_error_invoices Stage true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh evapt_ods bil_invoice dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh evapt_ods bil_invoice_bkp dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh evapt_ods bil_invoice_dup dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh evapt_ods bil_invoice_dup_bkp dbo false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh evapt_ods products_error_invoices dbo false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh evapt_ods products_invoiceuk dbo false 

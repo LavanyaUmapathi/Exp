@@ -1,1 +1,0 @@
-add get_verion.py in inject variables part of jenkins job

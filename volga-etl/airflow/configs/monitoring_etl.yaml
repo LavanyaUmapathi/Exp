@@ -1,0 +1,6 @@
+LOG_PREFIX: cron_mml
+acumen_cron_scripts_dir: /usr/local/acumen-admin/cron
+acumen_python_dir: /usr/local/acumen-admin/bin
+acumen_scripts_dir: /usr/local/acumen-admin/scripts
+acumen_admin_dir: /usr/local/acumen-admin
+user: maas

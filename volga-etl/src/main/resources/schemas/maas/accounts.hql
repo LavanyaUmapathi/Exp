@@ -6,6 +6,9 @@ SET hive.exec.dynamic.partition.mode=nonstrict;
 SET hive.exec.dynamic.partition=true;
 SET hive.optimize.bucketmapjoin=true;
 
+SET PARTITION_DATE;
+SET hivevar:PARTITION_DATE;
+
 CREATE TABLE accounts_stg (
 id STRING,
 external_id STRING,
@@ -51,7 +54,12 @@ LOAD DATA INPATH '/user/asilva/configs/configuration*' INTO TABLE accounts_stg;
 --copy to ORC table
 FROM accounts_stg stg
 INSERT OVERWRITE TABLE accounts
- SELECT *;
+SELECT *;
 
+--copy to history table
+INSERT OVERWRITE TABLE accounts_history
+PARTITION (dt='${hivevar:PARTITION_DATE}')
+SELECT *
+FROM accounts_stg;
 
 DROP TABLE accounts_stg;

@@ -79,6 +79,7 @@ then
                 exit
             else
                 echo "Previous ORC load did not start. Executed what has been collected in the previous run!"
+                
                 hiveORCCmd="sudo -u ods_archive $HIVE_HOME/bin/hive  -f /tmp/scripts/$subject"
                 echo $hiveORCCmd
                 $dry eval $hiveORCCmd  &
@@ -164,9 +165,9 @@ then
                 then
                         if [[ $isTimestamp == true* ]]
                         then
-                                echo "insert into table $db_name.$subject$orc select * from $db_name.$subject where $dateColumnName >= $cdatets and $dateColumnName < $ndatets;" >> /tmp/scripts/$subject
+                                echo "insert into table $db_name.$subject$orc select * from $db_name.$subject where cast($dateColumnName as bigint) >= $cdatets and cast($dateColumnName as bigint) < $ndatets;" >> /tmp/scripts/$subject
                         else
-                                echo "insert into table $db_name.$subject$orc select * from $db_name.$subject where $dateColumnName >= $cdate and $dateColumnName < $ndate;" >> /tmp/scripts/$subject
+                                echo "insert into table $db_name.$subject$orc select * from $db_name.$subject where $dateColumnName >= '$cdate' and $dateColumnName < '$ndate';" >> /tmp/scripts/$subject
                         fi
                 fi
                 echo "cmpleted load $cdate"
@@ -178,6 +179,18 @@ then
 
         done
         echo "All dates are already processed for $subject"
+        echo "exit;" >> /tmp/scripts/$subject
+        cat /tmp/scripts/$subject
+        chmod 755 /tmp/scripts/$subject
+        hiveORCCmd="sudo -u ods_archive $HIVE_HOME/bin/hive  -f /tmp/scripts/$subject"
+        echo $hiveORCCmd
+        $dry eval $hiveORCCmd  &
+        PID2=$!
+        echo "Hive load orc PID is $PID2"
+        $dry wait $PID2
+        echo "Hive load orc finished"
+        echo "completed"  >> /tmp/scripts/$subject
+
 else
        echo "Starting param is not date selecting all records where selected id is greated than last collected id"
        GLOBIGNORE="*"
@@ -193,9 +206,10 @@ else
 
 
 
-                sqoopcmd="sudo -u ods_archive $SQOOP_HOME/bin/sqoop import --connect \"jdbc:sqlserver://$sql_ip;database=$db_name;username=$sql_u_name;password=$sql_p_word\"  --query 'select TOP 10000000 *  from $subject WITH (NOLOCK) where $dateColumnName > $cdate and \$CONDITIONS order by $dateColumnName asc' --fields-terminated-by , --escaped-by \\\ --enclosed-by '\"'    --compress -m 1 --target-dir $targetdir --check-column $dateColumnName --incremental append --last-value $cdate --hive-drop-import-delims"
+                sqoopcmd="sudo -u ods_archive $SQOOP_HOME/bin/sqoop import --connect \"jdbc:sqlserver://$sql_ip;database=$db_name;username=$sql_u_name;password=$sql_p_word\"  --query 'select TOP 10000000 *  from $schema.$subject WITH (NOLOCK) where $dateColumnName > $cdate and \$CONDITIONS order by $dateColumnName asc' --fields-terminated-by , --escaped-by \\\ --enclosed-by '\"'    --compress -m 1 --target-dir $targetdir --check-column $dateColumnName --incremental append --last-value $cdate --hive-drop-import-delims  -- --schema $schema --table-hints NOLOCK"
                 echo $sqoopcmd
-                load_output=$($dry eval $sqoopcmd)
+                load_output=$($dry eval $sqoopcmd 2>&1 |tee -a log)
+                echo "Captured output"
                 echo $load_output
                 if [[ $dry == "echo" ]]
                 then
@@ -238,3 +252,16 @@ else
         echo "Hive load orc finished"
         echo "completed"  >> /tmp/scripts/$subject
 fi
+if [[ $orcFlag == "true" ]]
+then
+        orcDir="/apps/hive/warehouse/$db_name.db/$subject_orc"
+	echo $orcDir
+	cleaupEmptyFiles="$AIRFLOW_RUN_DIR/ods_archiving/remove_empty_orc_files.sh $orcDir"
+        echo $cleaupEmptyFiles
+        $dry eval $cleaupEmptyFiles &
+        PID3=$!
+        echo "Empty orc file cleanup PID is $PID3"
+        $dry wait $PID3
+	echo "Empty orc file cleanup completed"
+fi
+

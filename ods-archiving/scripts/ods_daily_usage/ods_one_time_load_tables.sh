@@ -1,0 +1,9 @@
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_daily_usage tbl_daily_usage_one_day dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_daily_usage temp_daily_usage_all_load_incremental_qa dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_daily_usage temp_daily_usage_all_load_incremental_event_t dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_daily_usage temp_daily_usage_all_load_incremental_event_t_rax dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_daily_usage tbl_daily_usage_agg_month dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_daily_usage temp_daily_usage_all_load_incremental_slice_units_table dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_daily_usage tbl_daily_usage_10202015 dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_daily_usage tbl_daily_usage dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh ods_daily_usage tbl_daily_usage_all dbo false 

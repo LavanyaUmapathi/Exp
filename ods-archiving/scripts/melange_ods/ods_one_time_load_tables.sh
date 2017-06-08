@@ -1,0 +1,14 @@
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh melange_ods allocatable_ips dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh melange_ods interfaces dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh melange_ods mac_addresses dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh melange_ods ip_addresses dbo true 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh melange_ods policies dbo false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh melange_ods ip_ranges dbo false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh melange_ods ip_blocks dbo false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh melange_ods allocatable_macs dbo false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh melange_ods ip_octets dbo false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh melange_ods ip_routes dbo false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh melange_ods mac_address_ranges dbo false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh melange_ods migrate_version dbo false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh melange_ods allowed_ips dbo false 
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_full_load.sh melange_ods ip_nats dbo false 

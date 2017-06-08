@@ -28,9 +28,9 @@
             <version>${hadoop.version}</version>
         </dependency>
     </dependencies>
-         
+
       <build>
-      <plugins>
+       <plugins>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>rpm-maven-plugin</artifactId>
@@ -42,19 +42,44 @@
           </execution></executions>
           <configuration>
               <license>Rackspace Proprietary</license>
-              <description>RPM package for project</description>
+              <description>Hive UDFs for Caspian data lake</description>
               <group>volga</group>
               <targetOS>linux</targetOS>
               <mappings>
                   <mapping>
-                      <directory>/home/lavanya/rpmtest/hive/</directory>
-                      <dependency />
+                      <directory>/usr/local/volga-hive/</directory>
                       <artifact />
+                      <sources>
+						<softlinkSource>
+							<location>volga-hive-${version.number}.jar</location>
+      						<destination>volga-hive.jar</destination>
+						</softlinkSource>
+						<softlinkSource>
+							<location>volga-hive-${version.number}.jar</location>
+      						<destination>volga-hive-1.0.0.jar</destination>
+						</softlinkSource>
+                      </sources>
                   </mapping>
               </mappings>
           </configuration>
         </plugin>
-      </plugins>
-    </build>
-         
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+            	<artifactId>maven-shade-plugin</artifactId>
+            	<version>2.3</version>
+				<executions>
+	                <execution>
+	                    <phase>package</phase>
+	                    <goals>
+	                        <goal>shade</goal>
+	                    </goals>
+	                    <configuration>
+	                        <minimizeJar>true</minimizeJar>
+	                    </configuration>
+	                </execution>
+	            </executions>			
+	        </plugin>
+       </plugins>
+      </build>
+
 </project>

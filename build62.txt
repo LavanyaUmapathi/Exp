@@ -1,1 +1,0 @@
-The permission to get_version file is given from backend

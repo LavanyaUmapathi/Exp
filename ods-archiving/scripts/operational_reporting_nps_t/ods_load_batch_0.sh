@@ -1,0 +1,1 @@
+/home/airflow/airflow-jobs/scripts/ods_archiving/ods_incremental_partitioned_table_load.sh operational_reporting_nps_t ticket_survey dw_timestamp dbo true true false
